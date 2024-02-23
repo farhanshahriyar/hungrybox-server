@@ -48,6 +48,17 @@ async function run() {
       res.send(result);
     });
 
+    // 2. Get carts using email
+    app.get('/carts', async (req, res) => {
+      const email = req.query.email;
+      const filter = {email: email};
+      const result = await cartCollections.find(filter).toArray();
+      res.send(result); // for check carts in localhost = http://localhost:6001/carts?email=yourmail
+    });
+  
+
+
+
 
 
     await client.db("admin").command({ ping: 1 });
@@ -65,5 +76,5 @@ app.get('/', (req, res) => {
 
 
 app.listen(port, () => {
-    console.log(`Example app listening at port number:${port}`);
+    console.log(`hungrybox server listening at port number:${port}`);
 });
