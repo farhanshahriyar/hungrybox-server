@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require ('cors');
 const port = process.env.PORT || 6001;
 require('dotenv').config();
@@ -38,7 +38,6 @@ async function run() {
       res.send(result);
     });
 
-
     // all cart items operations
 
     // 1. posting cart on db
@@ -55,7 +54,22 @@ async function run() {
       const result = await cartCollections.find(filter).toArray();
       res.send(result); // for check carts in localhost = http://localhost:6001/carts?email=yourmail
     });
+
+    // 3. Get specific cart item using id
+    app.get('/carts/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const result = await cartCollections.findOne(filter);
+      res.send(result);
+    });
   
+    // 4. Delete cart item
+    app.delete('/carts/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const result = await cartCollections.deleteOne(filter);
+      res.send(result);
+    });
 
 
 
