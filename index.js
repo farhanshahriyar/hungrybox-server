@@ -31,12 +31,50 @@ async function run() {
   // Establish connection for database and collections
     const menuCollections = client.db("hungrybox-db").collection("menu");
     const cartCollections = client.db("hungrybox-db").collection("cartItems");
+    const userCollections = client.db("hungrybox-db").collection("users");
 
     // all menu items operations
     app.get('/menu', async (req, res) => {
       const result = await menuCollections.find({}).toArray();
       res.send(result);
     });
+
+    // all user operations
+    // 1. get all users
+    app.get('/users', async (req, res) => {
+      try {
+        const users = await userCollections.find({}).toArray();
+        res.status(200).json(users);
+      } catch (error) {
+        res.status(500).json({ message: 'Failed to fetch users: ' + error.message });
+      }
+    });
+
+    // 2. post a user 
+    app.post('/users', async (req, res) => {
+      try {
+        const newUser = req.body;
+        const result = await userCollections.insertOne(newUser);
+        res.status(201).json(result);
+      } catch (error) {
+        res.status(500).json({ message: 'Failed to create user: ' + error.message });
+      }
+    });
+    
+    // 3. users collection by id
+        app.get('/users/:id', async (req, res) => {
+          const id = req.params.id;
+          const email = req.query.email;
+          const query = {
+              _id: new ObjectId(id),
+              useremail: email
+          };
+          const user = await userCollection.findOne(query);
+          res.json(user);
+      });
+    
+
+
 
     // all cart items operations
 
@@ -99,7 +137,7 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-    res.send('Hello World!');
+    res.send('Hello Hungrybox Server');
 });
 
 
